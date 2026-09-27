@@ -1,0 +1,4 @@
+interface:
+  display_name: "GitHub Actions CI"
+  short_description: "Add or fix minimal CI for this repository"
+  default_prompt: "Use $github-actions-ci to inspect this repository and set up the smallest useful GitHub Actions CI for it."
