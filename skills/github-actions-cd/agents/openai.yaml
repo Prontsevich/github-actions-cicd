@@ -1,0 +1,4 @@
+interface:
+  display_name: "GitHub Actions CD"
+  short_description: "Plan deployment, release, and rollback"
+  default_prompt: "Use $github-actions-cd to plan a safe delivery path for this repository on top of its existing CI."
