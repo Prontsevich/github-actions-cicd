@@ -50,14 +50,12 @@ Name the gap, explain its consequence, and offer the smallest fix; never paper o
 
 - **No tests:** run a real build if one exists, and say that CI checks the build but does not test behavior. Never invent a placeholder test or weaken checks just to get a green run.
 - **No test or build command:** do not create an empty or `echo`-only workflow. Explain that CI needs a real command and offer to add one to the project first.
-- **No committed lockfile:** explain that dependency versions may change between runs and recommend committing the lockfile. If the user declines, use the install command that works without it (for example `npm install` instead of `npm ci`) and state that runs are not reproducible.
+- **No committed lockfile or pinned versions:** explain that dependency versions may change between runs and offer the project's way to pin them: commit the package manager's lockfile, or for plain `requirements.txt`, pin exact versions with `==` (for example via `pip freeze`, `pip-compile`, or `uv lock`). If the user declines, use the install command that works without a lockfile (for example `npm install` instead of `npm ci`) and state that runs are not reproducible.
 - **Checks need environment variables or a database:** find out what they actually need. Use non-secret test values in `env:`, or a service container for a database. If a real secret or paid external service is required, explain the dependency and ask before wiring it in. Secrets are not available to pull requests from forks.
 - **Runtime version not declared:** ask the user to choose, or offer to add a version file, before configuring CI. Do not silently pick a version.
 - **No network access:** if action versions cannot be checked online, use the current major tag of a first-party action only when confident it exists, say it was not verified, and give the user `gh api repos/actions/<name>/releases/latest --jq .tag_name` to check it.
 
-## Explain and verify
-
-Explain what each step does, why it is present, and which project file proves the runtime or command. Clarify that a green run confirms only the checks configured in the workflow.
+## Verify
 
 Check the trigger and branch filter, action references, permissions, timeout, working directory, runtime, install command, and every referenced script. Run `actionlint` on the workflow when it is installed; otherwise check the YAML structure by reading it.
 
@@ -69,7 +67,17 @@ Find the first failed step, in the Actions tab, in the pull request's Checks, or
 
 ## Report
 
-Finish with the files changed, verified project facts, checks performed and their results, and the user's next action. Keep code and workflow comments in English; explain in the user's language.
+Leave the changes in the working tree. Creating a branch, committing, pushing, or opening a pull request is the user's next action unless they asked you to do it.
+
+The final message is written in the user's language and has these parts, in order:
+
+1. **Files changed:** each workflow file created or edited.
+2. **Step table:** one row per trigger, setting, and step, with columns *step*, *what it does*, *proven by* (the project file or user statement behind it, or "initial default" for a chosen value such as the timeout).
+3. **What CI does not check:** each gap from this run, such as no tests or unpinned dependencies, with the smallest fix you offer for it, and that a green run confirms only the configured checks.
+4. **Checks performed:** each local command or lint you ran and its result; say plainly that the remote run has not happened yet.
+5. **Next action:** what the user does now, such as commit, push, or open a pull request, and where to watch the first run.
+
+Keep code and workflow comments in English.
 
 ## Official references
 
